@@ -1,0 +1,57 @@
+.thead-blue {
+    background: #CAF8F8 !important;
+}
+
+.nav-item .active {
+    background-color: #36b9cc;
+    background-image: linear-gradient(180deg,#36b9cc 10%,#258391 100%);
+}
+
+.col .ubah-hilang {
+    display: none;
+}
+
+.img-jasa {
+    max-width: 256px;
+    max-height: 192px;
+}
+
+.img-jasa-ulasan {
+    max-width: 256px;
+    max-height: 192px;
+}
+
+.btn-bayar {
+    background: #03C2D5;
+    width: 150px;
+    border-radius: 20px;
+}
+
+.btn-tolak {
+    width: 150px;
+    border-radius: 20px;
+}
+
+.btn-terima {
+    width: 150px;
+    border-radius: 20px;
+}
+
+.rating-kosong {
+    color: red;
+}
+
+.row .col {
+	animation: transitionIn 1s;
+}
+
+@keyframes transitionIn {
+	from {
+		opacity: 0;
+		transform: rotateX(-18deg);
+	}
+	to {
+		opacity: 1;
+		transform: rotateX(0);
+	}
+}
