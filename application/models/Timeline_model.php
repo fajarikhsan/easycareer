@@ -1,23 +1,26 @@
-<?php 
+<?php
 
-Class Timeline_model extends CI_Model {
-    public function getCurrentDate() {
+class Timeline_model extends CI_Model
+{
+    public function getCurrentDate()
+    {
         return date("Y/m/d");
     }
 
-    public function getAllDataJasa() {
+    public function getAllDataJasa()
+    {
         $query = "SELECT *
                     FROM USER, penyedia_jasa, profesi, jenis_jasa, jasa
                     WHERE user.id_user = penyedia_jasa.id_user 
                     AND penyedia_jasa.id_penyedia = profesi.id_penyedia 
                     AND profesi.id_jenis = jenis_jasa.id_jenis
                     AND jasa.id_jenis = profesi.id_jenis
-                    AND status_jasa = 1
                     GROUP BY id_jasa";
         return $this->db->query($query)->result_array();
     }
 
-    public function getUserById($id = null) {
+    public function getUserById($id = null)
+    {
         $query = "SELECT user.id_user, username, PASSWORD, email, nohp, penyedia_jasa.id_penyedia, portfolio, foto_profil, 
         GROUP_CONCAT(jenis_jasa.id_jenis) AS id_jenis, 
         GROUP_CONCAT(nama_jenis) AS nama_jenis
@@ -27,11 +30,13 @@ Class Timeline_model extends CI_Model {
         return $this->db->query($query)->row_array();
     }
 
-    public function getAllProfesi() {
+    public function getAllProfesi()
+    {
         return $this->db->get('jenis_jasa')->result_array();
     }
 
-    public function getJasaByIdPenyedia($id, $prof) {
+    public function getJasaByIdPenyedia($id, $prof)
+    {
         $query = "SELECT *
                     FROM USER, penyedia_jasa, profesi, jenis_jasa, jasa
                     WHERE user.id_user = penyedia_jasa.id_user 
@@ -41,11 +46,12 @@ Class Timeline_model extends CI_Model {
                     AND id_jasa = '$id'
                     AND penyedia_jasa.id_penyedia = '$prof'
                     GROUP BY id_jasa";
-        
+
         return $this->db->query($query)->row_array();
     }
 
-    public function getRatingByIdJasa($id) {
+    public function getRatingByIdJasa($id)
+    {
         $query = "SELECT username, foto_profil, tanggal_transaksi, ulasan, 
                     rating, AVG(rating) AS avg_rating, COUNT(rating) AS count_rating
                     FROM USER, customer, transaksi, pembayaran, penyedia_jasa, jasa
@@ -57,11 +63,12 @@ Class Timeline_model extends CI_Model {
                     AND transaksi.id_jasa = '$id'
                     AND rating != ''
                     GROUP BY transaksi.id_transaksi";
-        
+
         return $this->db->query($query)->result_array();
     }
 
-    public function getAvgRating($id) {
+    public function getAvgRating($id)
+    {
         $query = "SELECT username, foto_profil, tanggal_transaksi, ulasan, 
                     rating, AVG(rating) AS avg_rating, COUNT(rating) AS count_rating
                     FROM USER, customer, transaksi, pembayaran, jasa
@@ -75,17 +82,19 @@ Class Timeline_model extends CI_Model {
         return $this->db->query($query)->row_array();
     }
 
-    public function getPenyediaByIdJasa($id) {
+    public function getPenyediaByIdJasa($id)
+    {
         $query = "SELECT GROUP_CONCAT(nama_jenis) AS nama_jenis
                     FROM penyedia_jasa, profesi, jenis_jasa
                     WHERE penyedia_jasa.`id_penyedia` = profesi.`id_penyedia`
                     and profesi.`id_jenis` = jenis_jasa.`id_jenis`
                     and penyedia_jasa.id_penyedia = '$id'";
-        
+
         return $this->db->query($query)->row_array();
     }
 
-    public function getJasaById() {
+    public function getJasaById()
+    {
         $query = "SELECT *
         FROM USER, penyedia_jasa, profesi, jenis_jasa, jasa
         WHERE user.id_user = penyedia_jasa.id_user 
@@ -94,7 +103,7 @@ Class Timeline_model extends CI_Model {
         AND jasa.id_jenis = profesi.id_jenis
         AND status_jasa = 1";
 
-        if ( isset($_POST['filter_jasa']) ) {
+        if (isset($_POST['filter_jasa'])) {
             $filter = implode("','", $this->input->post('filter_jasa', true));
             $query .= " AND jasa.id_jenis IN('" . $filter . "')";
         }
@@ -105,8 +114,8 @@ Class Timeline_model extends CI_Model {
         $banyak = $this->db->query($query)->num_rows();
         $output = "";
 
-        if ( $banyak > 0 ) {
-            foreach ( $hasil as $h ) {
+        if ($banyak > 0) {
+            foreach ($hasil as $h) {
                 $output .= "<div class='col col-timeline'>";
                 $output .= "<div class='card mt-4 mb-4'>";
                 $output .= "<div class='foto-jasa'>";
@@ -114,7 +123,7 @@ Class Timeline_model extends CI_Model {
                 $output .= "</div>";
                 $output .= "<div class='card-body'>";
                 $output .= "<p class='card-text judul-jasa'>" . $h['judul_jasa'] . "</p>";
-                $output .= "<h5 class='card-title'>" . 'Rp ' . number_format($h['harga'],0,',','.') . "</h5>";
+                $output .= "<h5 class='card-title'>" . 'Rp ' . number_format($h['harga'], 0, ',', '.') . "</h5>";
                 $output .= "<p class='card-text'>" . $h['nama_jenis'] . "</p>";
                 $output .= "<a href='" . base_url('timeline/detail/' . $h['id_jasa']) . '/' . $h['id_penyedia'] . "' class='stretched-link'></a>";
                 $output .= "</div>";
@@ -127,7 +136,8 @@ Class Timeline_model extends CI_Model {
         echo $output;
     }
 
-    public function getCari() {
+    public function getCari()
+    {
         $query = "SELECT *
         FROM USER, penyedia_jasa, profesi, jenis_jasa, jasa
         WHERE user.id_user = penyedia_jasa.id_user 
@@ -136,7 +146,7 @@ Class Timeline_model extends CI_Model {
         AND jasa.id_jenis = profesi.id_jenis
         AND status_jasa = 1";
 
-        if ( isset($_POST['cari']) ) {
+        if (isset($_POST['cari'])) {
             $filter = $this->input->post('cari');
             $query .= " AND judul_jasa LIKE '%$filter%'";
         }
@@ -147,8 +157,8 @@ Class Timeline_model extends CI_Model {
         $banyak = $this->db->query($query)->num_rows();
         $output = "";
 
-        if ( $banyak > 0 ) {
-            foreach ( $hasil as $h ) {
+        if ($banyak > 0) {
+            foreach ($hasil as $h) {
                 $output .= "<div class='col col-timeline'>";
                 $output .= "<div class='card mt-4 mb-4'>";
                 $output .= "<div class='foto-jasa'>";
@@ -156,7 +166,7 @@ Class Timeline_model extends CI_Model {
                 $output .= "</div>";
                 $output .= "<div class='card-body'>";
                 $output .= "<p class='card-text judul-jasa'>" . $h['judul_jasa'] . "</p>";
-                $output .= "<h5 class='card-title'>" . 'Rp ' . number_format($h['harga'],0,',','.') . "</h5>";
+                $output .= "<h5 class='card-title'>" . 'Rp ' . number_format($h['harga'], 0, ',', '.') . "</h5>";
                 $output .= "<p class='card-text'>" . $h['nama_jenis'] . "</p>";
                 $output .= "<a href='" . base_url('timeline/detail/' . $h['id_jasa']) . '/' . $h['id_penyedia'] . "' class='stretched-link'></a>";
                 $output .= "</div>";
@@ -169,7 +179,8 @@ Class Timeline_model extends CI_Model {
         echo $output;
     }
 
-    public function tambahTransaksi() {
+    public function tambahTransaksi()
+    {
         $data = [
             'status' => 'Menunggu Pembayaran',
             'detail_pekerjaan' => $this->input->post('detail-pekerjaan', true),
@@ -185,7 +196,8 @@ Class Timeline_model extends CI_Model {
         $this->db->update('jasa', ['status_jasa' => 0]);
     }
 
-    public function getRatingByValue() {
+    public function getRatingByValue()
+    {
         $id_jasa = $this->input->post('id_jasa');
         $query = "SELECT username, foto_profil, tanggal_transaksi, ulasan, 
                     rating, AVG(rating) AS avg_rating, COUNT(rating) AS count_rating
@@ -197,10 +209,9 @@ Class Timeline_model extends CI_Model {
                     AND penyedia_jasa.id_penyedia = jasa.id_penyedia
                     AND id_jasa = '$id_jasa'";
 
-        if ( isset($_POST['find']) ) {
+        if (isset($_POST['find'])) {
             $rating = $this->input->post('find');
-            if ( $rating == 'semua' ) {
-
+            if ($rating == 'semua') {
             } else {
                 $query .= " AND rating = '$rating'";
             }
@@ -212,8 +223,8 @@ Class Timeline_model extends CI_Model {
         $banyak = $this->db->query($query)->num_rows();
         $output = "";
 
-        if ( $banyak > 0 ) {
-            foreach ( $hasil as $r ) {
+        if ($banyak > 0) {
+            foreach ($hasil as $r) {
                 $output .= "<li class='list-group-item'>";
                 $output .= "<div class='row'>";
                 $output .= "<div class='col-1'>";
